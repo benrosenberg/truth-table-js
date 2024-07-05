@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Truth Table Generator</title>
+  <link rel="stylesheet" href="https://benrosenberg.info/style.css" />
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .center{margin: 0; top: 50%; left: 50%; right: 50%; bottom: 50%;}
+    .button{background-color: #282828; border: 1px solid #ebdbb2; color: #ebdbb2;}
+    table,tr,th,td{border: none;}
+    button {
+        background-color: #282828;
+        color: #ebdbb2;
+        border: 1px solid #ebdbb2;
+        box-sizing: border-box;
+        font-weight: 500;
+        padding-left: 6px;
+        padding-right: 6px;
+        line-height: 1.25rem;
+        text-align: center;
+        text-decoration-thickness: auto;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="https://benrosenberg.info/favicon.png">
+</head>
+<body>
+  <ul class="sidenav">
+    <li><a href="/">Home</a></li>
+    <li><a class="active" href="https://benrosenberg.info/posts">Posts</a></li>
+    <li><a href="https://github.com/benrosenberg">GitHub</a></li>
+    <li><a href="https://www.linkedin.com/in/ben-rosenberg-0b5359205/">LinkedIn</a></li>
+  </ul>
+
+<div class="content">
+<header id="title-block-header">
+    <h1 class="title" style="text-align: left;">Truth Table Generator</h1>
+</header>
+
+
+<details>
+<summary>Select operator symbols</summary>
+<p>
+<div id="operator-symbol-select"></div>
+</p>
+</details>
+
+
+<p>
+<table>
+    <tr><td>Variable names</td><td><input type="text" id="input-variable-names" value="P Q"></td></tr>
+    <tr><td>Expression list</td><td><table id="expression-table">
+        <tr id="row-expression-1"><td><input type="text" id="input-expression-1" value="P AND Q"></td><td><button onclick="remove_expression_slot(1);">x</button></td></tr>
+        <tr id="row-expression-2"><td><input type="text" id="input-expression-2" value="P XOR Q"></td><td><button onclick="remove_expression_slot(2);">x</button></td></tr>
+        <tr><td style="text-align: center;"><button onclick="add_expression_slot();">+</button></td></tr>
+    </table></tr>
+    <tr><td>Output format</td><td><select id="select-output-format">
+        <option value="latex">LaTeX</option>
+        <option value="markdown">Markdown/plaintext</option>
+        <option value="csv">CSV</option>
+        <option value="html">HTML</option>
+    </select></td></tr>
+</table>
+</p>
+
+</div>
+
+<script src="src/operators.js"></script>
+<script>
+    // TODO - add logic to add/remove expression rows from expression table based on row number
+    function add_expression_slot() {}
+    function remove_expression_slot() {}
+
+    window.onload = function() {
+        generate_operator_symbol_select();
+    }
+</script>
+
+</body>
+</html>

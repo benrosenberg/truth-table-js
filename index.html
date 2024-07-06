@@ -64,8 +64,7 @@
     <tr><td>Expression list</td><td><table id="expression-table">
         <tr id="row-expression-1"><td><input type="text" id="input-expression-1" value="P AND Q"></td><td><button onclick="remove_expression_slot(1);">x</button></td></tr>
         <tr id="row-expression-2"><td><input type="text" id="input-expression-2" value="P XOR Q"></td><td><button onclick="remove_expression_slot(2);">x</button></td></tr>
-        <tr><td style="text-align: center;"><button onclick="add_expression_slot();">+</button></td></tr>
-    </table></tr>
+    </table><table><tr><td><button onclick="add_expression_slot();">+</button></td></tr></table></tr>
     <tr><td>Output format</td><td><select id="select-output-format">
         <option value="latex">LaTeX</option>
         <option value="markdown">Markdown/plaintext</option>
@@ -75,13 +74,86 @@
 </table>
 </p>
 
+<p>
+    <button onclick="generate_table();">Generate truth table</button>
+</p>
+
+<p id="error-output" style="color: red; display: none;">
+    Placeholder error output
+</p>
+
+<p>
+    <div id="table-html-output"></div>
+</p>
+
+<p>
+    <div><textarea id="table-text-output" rows="20" cols="60" style="display: none;"></textarea></div>
+</p>
+
 </div>
 
-<script src="src/operators.js"></script>
+<script src="src/truth_table.js"></script>
+<script src="src/render_output.js"></script>
 <script>
-    // TODO - add logic to add/remove expression rows from expression table based on row number
-    function add_expression_slot() {}
-    function remove_expression_slot() {}
+    var expression_count = 2;
+
+    function add_expression_slot() {
+        expression_count += 1;
+        expression_table = document.getElementById('expression-table');
+        new_expression = document.createElement('tr');
+        new_expression.innerHTML = `<tr><td><input type="text" id="input-expression-${expression_count}" value=""></td><td><button onclick="remove_expression_slot(${expression_count});">x</button></td></tr>`;
+        new_expression.id = `row-expression-${expression_count}`;
+        expression_table.appendChild(new_expression);
+    }
+
+    function remove_expression_slot(expression_index) {
+        row = document.getElementById(`row-expression-${expression_index}`);
+        row.remove();
+    }
+
+    function get_all_expressions() {
+        expression_rows = document.getElementById('expression-table').rows;
+        expression_list = [];
+        for (row of expression_rows) {
+            expression_list.push(row.children[0].children[0].value);
+        }
+        return expression_list;
+    }
+
+    function generate_table() {
+        error_output = document.getElementById('error-output');
+        error_output.style.display = 'none';
+        variables = document.getElementById('input-variable-names').value.split(/\s+/);
+        expressions = get_all_expressions();
+        output_format = document.getElementById('select-output-format').value;
+        html_render_location = document.getElementById('table-html-output');
+        text_render_location = document.getElementById('table-text-output');
+        base_table = generate_base_table(variables);
+        table = augment_table(base_table, expressions);
+        table_html = render_html(table);
+        // table_html = render_html(base_table);
+        html_render_location.innerHTML = table_html;
+        switch (output_format) {
+            case 'latex':
+                console.log('latex output');
+                table_text = render_latex(table);
+                break;
+            case 'markdown':
+                console.log('markdown output');
+                table_text = render_markdown(table);
+                break;
+            case 'csv':
+                console.log('csv output');
+                table_text = render_csv(table);
+                break;
+            case 'html':
+                console.log('html output');
+                table_text = table_html;
+                break;
+        }
+        text_render_location.innerText = table_text;
+        text_render_location.style.display = 'initial';
+    }
 
     window.onload = function() {
         generate_operator_symbol_select();

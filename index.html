@@ -129,9 +129,15 @@
         html_render_location = document.getElementById('table-html-output');
         text_render_location = document.getElementById('table-text-output');
         base_table = generate_base_table(variables);
-        table = augment_table(base_table, expressions);
+        is_latex = output_format == 'latex';
+        table_non_latex = augment_table(base_table, expressions, false);
+        // only need to generate latex table if latex output selected
+        if (is_latex) {
+            table = augment_table(base_table, expressions, is_latex);
+        } else {
+            table = table_non_latex;
+        }
         table_html = render_html(table);
-        // table_html = render_html(base_table);
         html_render_location.innerHTML = table_html;
         switch (output_format) {
             case 'latex':
@@ -151,7 +157,7 @@
                 table_text = table_html;
                 break;
         }
-        text_render_location.innerText = table_text;
+        text_render_location.value = table_text;
         text_render_location.style.display = 'initial';
     }
 

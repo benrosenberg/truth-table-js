@@ -355,6 +355,35 @@ function evaluate_expression(expression, var_value_dictionary) {
     return out;
 }
 
+function generate_header_from_rpn(rpn_list, is_latex) {
+    stack = [];
+    queue = rpn_list;
+
+    t = 0;
+    while (t < queue.length) {
+        if (OPERATORS.hasOwnProperty(queue[t]) && OPERATORS[queue[t]].arity == 2) {
+            a = stack.pop();
+            b = stack.pop();
+            stack.push(retrieve_display_choice(is_latex, queue[t])(a, b));
+        } else if (OPERATORS.hasOwnProperty(queue[t]) && OPERATORS[queue[t]].arity == 1) {
+            a = stack.pop();
+            stack.push(retrieve_display_choice(is_latex, queue[t])(a));
+        } else {
+            stack.push(queue[t]);
+        }
+        t += 1;
+    }
+    
+    return stack[0];
+}
+
+function generate_header(expression, var_value_dictionary, is_latex) {
+    rpn = convert_to_rpn(expression, var_value_dictionary);
+    out = generate_header_from_rpn(rpn, is_latex);
+    console.log(expression, var_value_dictionary, rpn, out);
+    return out;
+}
+
 // Generate truth table
 
 function check_varname_validity(variables) {
@@ -408,19 +437,38 @@ function generate_base_table(variables) {
     return out;
 }
 
-function augment_table(base_table, expressions) {
-    variables = base_table[0];
-    for (var i = 1; i < base_table.length; i++) {
+function augment_table(base_table, expressions, is_latex) {
+    // first, clone base table into cloned_table
+    cloned_table = []
+    base_table.forEach(row => {
+        cloned_row = [...row];
+        cloned_table.push(cloned_row);
+    });
+
+    variables = cloned_table[0];
+    expression_headers = [];
+
+    for (var i = 1; i < cloned_table.length; i++) {
         var_value_dictionary = {};
-        base_table[i].forEach((element, j) => {
+        cloned_table[i].forEach((element, j) => {
             var_value_dictionary[variables[j]] = element;
         });
         expressions.forEach(expression => {
+            if (i == 1) {
+                // only augment header list on first runthrough
+                expression_headers.push(
+                    generate_header(
+                        expression,
+                        var_value_dictionary,
+                        is_latex
+                    )
+                );
+            }
             result = evaluate_expression(expression, var_value_dictionary);
-            base_table[i].push(result);
+            cloned_table[i].push(result);
         });
     }
-    base_table[0].push(...expressions);
-    return base_table;
+    cloned_table[0].push(...expression_headers);
+    return cloned_table;
 }
 
